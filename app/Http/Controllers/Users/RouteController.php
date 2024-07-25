@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 use App\Http\Controllers\Users\DataController as DATA;
+use App\Http\Controllers\Users\UserController as Userc;
 
 class RouteController extends Controller
 {
@@ -35,10 +36,18 @@ class RouteController extends Controller
 
         if($satu == 'testing'){
             $token = $req->bearerToken();
-
             return DATA::Testing($req);
-            return $this->CheckJWT($token);
+        }
 
+        elseif($satu == 'get-all'){
+            return Userc::GetAll($req);
+        }
+
+        elseif($satu == 'get-asis'){
+            return Userc::GetUserAsis($req);
+        }
+        elseif($satu == 'search-asis'){
+            return Userc::SearchUserAsis($req);
         }
 
         return response()->json([
