@@ -12,6 +12,9 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'sipd/singkron-chrome-ext/realtime',
+        'sipd/singkron-chrome-ext',
+        'evi-web/sipd/singkron-chrome-ext/realtime',
+        'evi-web/sipd/'
     ];
 }

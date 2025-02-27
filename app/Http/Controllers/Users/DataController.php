@@ -36,7 +36,7 @@ class DataController extends Controller
             'success' => $user['success'],
             'message' => 'Gagal Request Data ...',
             'token' => $token,
-            'user_id'  => $user['data']['user_id'],
+            'user_id'  => $user['data']['id'],
             'user'  => $user,
         ], 200);
 

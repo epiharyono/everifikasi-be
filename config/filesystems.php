@@ -56,6 +56,12 @@ return [
             'throw' => false,
         ],
 
+        'my_files' => [
+            'driver' => 'local',
+            'root'   => public_path() . '/asisfiles',
+            'max_file_size' => 10240,
+        ],
+
     ],
 
     /*

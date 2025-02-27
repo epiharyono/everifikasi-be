@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Models\User;
 use App\Models\Ta_User;
 use App\Models\Ref_Otoritas;
 use App\Models\Ta_Otoritas;
@@ -13,15 +14,19 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Auth;
 
+use App\Http\Controllers\JwtController as JWT;
 
 class HakAksesController extends Controller
 {
-    static function GetDataHAUser($slug){
+    static function GetDataHAUser($req,$slug){
         $token = $req->bearerToken();
         $user  = JWT::CheckJWT($token);
+        if(!$user['success']){
+           return response()->json(['success' => false,'message' => $message], 401);
+        }
+        $nip  = $user['data']['nip'];
 
-        return $user->success;
-        $admin = self::HakAksesUser($user->nip,1);
+        $admin = self::HakAksesUser($nip,1);
         if(!$admin['lihat']){
             $message = 'Otoritas Tidak Diizinkan!';
             return response()->json([
@@ -31,7 +36,8 @@ class HakAksesController extends Controller
             ]);
         }
 
-        $nip  = Ta_User::where('slug',$slug)->value('nip');
+        // $nip  = User::where('slug',$slug)->value('nip');
+        $nip  = User::where('id_user',$slug)->value('nip_user');
         $ref  = Ref_Otoritas::get();
         foreach($ref as $dat){
             if($dat->status == 0){
@@ -81,8 +87,14 @@ class HakAksesController extends Controller
     }
 
     static function UpdateHAUser($table,$req){
-        $user  = Auth::user();
-        $admin = self::HakAksesUser($user->nip,1);
+        $token = $req->bearerToken();
+        $user  = JWT::CheckJWT($token);
+        if(!$user['success']){
+           return response()->json(['success' => false,'message' => $message], 401);
+        }
+        $nip  = $user['data']['nip'];
+        
+        $admin = self::HakAksesUser($nip,1);
         if(!$admin['edit']){
             $message = 'Otoritas Tidak Diizinkan';
             return response()->json([

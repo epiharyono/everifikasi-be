@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 
 use App\Http\Controllers\Users\DataController as DATA;
 use App\Http\Controllers\Users\UserController as Userc;
+use App\Http\Controllers\Users\HakAksesController as HALocal;
 
 class RouteController extends Controller
 {
@@ -50,6 +51,14 @@ class RouteController extends Controller
             return Userc::SearchUserAsis($req);
         }
 
+        elseif($satu == 'get-all-users'){
+            return Userc::GetAll($req);
+        }
+
+        elseif($satu == 'get-data-opd'){
+            return Userc::GetOPD();
+        }
+
         return response()->json([
             'success' => false,
             'message' => 'Gagal Request Data.',
@@ -58,6 +67,20 @@ class RouteController extends Controller
     }
 
     public function IndexRouteDua(Request $req, $satu,$dua) {
+        if($satu == 'find-by-id'){
+            return Userc::FindByID($dua);
+        }
+        elseif($satu == 'get-ha-by-id'){
+            return HALocal::GetDataHAUser($req,$dua);
+        }
+
+        elseif($satu == 'update-hak-akses'){
+            return HALocal::UpdateHAUser($dua,$req);
+        }
+
+        elseif($satu == 'update-data'){
+            return Userc::Update($dua,$req);
+        }
 
         return response()->json([
             'success' => false,

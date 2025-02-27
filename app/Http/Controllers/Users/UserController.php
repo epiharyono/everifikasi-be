@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 
-use App\Models\Ta_User;
+use App\Models\User;
 use App\Models\OrdedrRinc;
 
 use App\Http\Controllers\Users\HakAksesController as HALocal;
@@ -27,8 +27,8 @@ class UserController extends Controller
         $success = false; $message = 'Otoritas Tidak Diizinkan';
         $super   = 1;
         $token = $req->bearerToken();
-        $user  = JWT::CheckJWT($token);
 
+        $user  = JWT::CheckJWT($token);
         if(!$user['success']){
            return response()->json(['success' => false,'message' => $message], 401);
         }
@@ -40,20 +40,21 @@ class UserController extends Controller
                'success' => false,
                'message' => $message.' '.$nip,
                'ha'  => $ha
-           ]);
+           ],200);
         }
         $super = 0;
         $success = true; $message = 'Sukses Get Data Users';
         $userl  = HALocal::GetTableUser($nip);
-        $query  = Ta_User::orderby('id','desc');
+        $query  = User::orderby('id','desc');
         if($req->search){
-            $query->where('nama','LIKE','%'.$req->search.'%');
+            $query->where('nama_user','LIKE','%'.$req->search.'%');
         }
         if(!$super){
-            $query->where('id_opd',$userl->id_opd);
+            // $query->where('id_opd',$userl->id_opd);
         }
         $data  = $query->paginate(10);
 
+        // $success = false;
         return response()->json([
             'success' => $success,
             'message' => $message,
@@ -113,9 +114,9 @@ class UserController extends Controller
          ], 200);
     }
 
-    static function FindBySlugxxx($slug){
+    static function FindByID($id){
          $success = true; $message = 'Sukses Get Data OPD';
-         $data  = Ta_User::where('slug',$slug)->first();
+         $data  = User::where('id_user',$id)->first();
 
          return response()->json([
              'success' => $success,
@@ -124,17 +125,11 @@ class UserController extends Controller
          ], 200);
     }
 
-    static function UpdateBySlugxxx($slug,$req){
+    static function Update($id,$req){
          $success = false; $message = 'Data Tidak Diupdate';
-         $user   = Auth::user();
-         $userl  = HALocal::GetTableUser($nip);
-         $opd   = DB::connection('ASIPEDI')->table('ta_opd')->where('id',$userl->id_opd)->first();
 
-         $data  = Ta_User::where('slug',$slug)->where('id',$req->id)->update([
-            'otoritas'  => $req->otoritas,
-            'id_opd'  => $opd->id,
-            'slug_opd'  => $opd->slug,
-            'nm_opd'  => $opd->nama,
+         $data  = DB::table('users')->where('id',$req->id)->update([
+            'id_opd'  => $req->id_opd,
             'status'  => $req->status,
          ]);
 
@@ -149,6 +144,18 @@ class UserController extends Controller
          ], 200);
     }
 
+    static function GetOPD(){
+        $opd   = DB::table('ta_opd')->get();
+        $success = true; $message = 'Sukses Update Data';
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data'  => $opd
+        ], 200);
+
+    }
+
     static function GetUserAsis($req){
         $token = $req->bearerToken();
 
@@ -158,8 +165,6 @@ class UserController extends Controller
     static function SearchUserAsis($req){
         $token = $req->bearerToken();
         $data =  JWT::SearchUser($req,$token);
-
-
 
         return response()->json([
             'success' => false,

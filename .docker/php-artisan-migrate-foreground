@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+php ${APP_SOURCE}/artisan config:clear
+php ${APP_SOURCE}/artisan cache:clear
+php ${APP_SOURCE}/artisan optimize
+
+php ${APP_SOURCE}/artisan migrate --force -n

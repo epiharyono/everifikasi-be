@@ -33,9 +33,21 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('evi')
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->prefix('evi-web')
+            Route::middleware('api')
+                ->prefix('eviweb')
                 ->group(base_path('routes/web.php'));
+
+            Route::middleware('web')
+                ->prefix('evifiles')
+                ->group(base_path('routes/web.php'));
+
+            Route::middleware('api')
+                ->prefix('sipd-api')
+                ->group(base_path('routes/sipd_api_brks.php'));
+
+            Route::middleware('api')
+                ->prefix('evi-brks')
+                ->group(base_path('routes/brks.php'));
         });
     }
 

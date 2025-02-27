@@ -53,14 +53,49 @@ class JwtController extends Controller
           $name = $tokenPayload['name'];
           $nik  = $tokenPayload['nik'];
           $nip  = $tokenPayload['nip'];
+          return ['success' => true, 'message' => 'Sukses Get Data', 'data' => $tokenPayload];
+    }
 
+    static function CheckJWTBrks($token)
+    {
+          try {
+              $jwtParts = explode('.', $token);
+              if (empty($header = $jwtParts[0]) || empty($payload = $jwtParts[1]) || empty($jwtParts[2])) {
+                  return ['success' => false, 'message' => 'No JWT Auth'];
+              }
+          } catch (Throwable $e) {
+              return ['success' => false, 'message' => 'Provided JWT is invalid.'];
+          }
+
+          if (
+              !($header = base64_decode($header))
+              || !($payload = base64_decode($payload))
+          ) {
+              return ['success' => false, 'message' => 'Provided JWT can not be decoded from base64.'];
+          }
+
+          if (
+              empty(($header = json_decode($header, true)))
+              || empty(($payload = json_decode($payload, true)))
+          ) {
+              return ['success' => false, 'message' => 'Provided JWT can not be decoded from JSON.'];
+          }
+
+          $tokenParts = explode(".", $token);
+          $tokenHeader = base64_decode($tokenParts[0]);
+          $tokenPayload = base64_decode($tokenParts[1]);
+          $tokenPayload = json_decode($tokenPayload, true);
+          // $id = $tokenPayload['id'];
+          // $name = $tokenPayload['name'];
+          // $nik  = $tokenPayload['nik'];
+          // $nip  = $tokenPayload['nip'];
           return ['success' => true, 'message' => 'Sukses Get Data', 'data' => $tokenPayload];
     }
 
 
     static function GetUser($user_id,$token){
           try {
-              $url = config("app.auth_server").'/api/v1/user/'.$user_id;
+              $url = config("app.auth_server").'/user/'.$user_id;
               $client = new GuzzleHttpClient();
               $apiRequest = $client->request('GET', $url,[
                   'headers' => [
