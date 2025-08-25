@@ -79,7 +79,7 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 RUN php artisan key:generate --ansi --force && \
     php artisan optimize
-    
+
 RUN echo "upload_max_filesize=50M" >> /usr/local/etc/php/php.ini
 RUN echo "post_max_size=50M" >> /usr/local/etc/php/php.ini
 
